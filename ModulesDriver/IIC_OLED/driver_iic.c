@@ -1,0 +1,143 @@
+#include "driver_iic.h"
+
+#define SDA_L()         HAL_GPIO_WritePin(SDA1_GPIO_Port, SDA1_Pin, GPIO_PIN_RESET)
+#define SDA_H()         HAL_GPIO_WritePin(SDA1_GPIO_Port, SDA1_Pin, GPIO_PIN_SET)
+#define SCL_L()         HAL_GPIO_WritePin(SCL1_GPIO_Port, SCL1_Pin, GPIO_PIN_RESET)
+#define SCL_H()         HAL_GPIO_WritePin(SCL1_GPIO_Port, SCL1_Pin, GPIO_PIN_SET)
+
+#define IIC_SDA_IN()    HAL_GPIO_ReadPin(SDA1_GPIO_Port, SDA1_Pin)
+
+static void iic_delay_us(uint32_t nus)
+{
+    uint32_t Delay = nus * 168/4;
+    do
+    {
+        __NOP();
+    }
+    while (Delay --);
+}
+
+void iic_gpio_reinit(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    HAL_GPIO_DeInit(SCL1_GPIO_Port, SCL1_Pin);
+    HAL_GPIO_DeInit(SDA1_GPIO_Port, SDA1_Pin);
+
+    GPIO_InitStruct.Pin = SCL1_Pin|SDA1_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    HAL_GPIO_WritePin(GPIOB, SCL1_Pin|SDA1_Pin, GPIO_PIN_SET);
+}
+
+void iic_start(void)
+{
+    SDA_H();
+    SCL_H();
+    iic_delay_us(1);
+    SDA_L();
+    iic_delay_us(1);
+    SCL_L();
+}
+
+void iic_stop(void)
+{
+    SDA_L();
+    SCL_H();
+    iic_delay_us(1);
+    SDA_H();
+    iic_delay_us(1);
+}
+
+uint8_t iic_wait_ack(void)
+{
+    uint8_t ucErrTime = 0;
+
+    SCL_L();
+    SDA_H();
+    iic_delay_us(1);
+
+    SCL_H();
+    iic_delay_us(1);
+
+    while(IIC_SDA_IN())
+    {
+        if (++ucErrTime >= 250)
+        {
+            SCL_L();
+            return 0;
+        }
+    }
+
+    SCL_L();
+    return 1;
+}
+
+void iic_ack(void)
+{
+    SCL_L();
+    SDA_L();
+    iic_delay_us(1);
+    SCL_H();
+    iic_delay_us(1);
+}
+
+void iic_nack(void)
+{
+    SCL_L();
+    SDA_H();
+    iic_delay_us(1);
+    SCL_H();
+    iic_delay_us(1);
+}
+
+void iic_write_byte(uint8_t data)
+{
+    uint8_t i;
+
+    for (i=0; i<8; i++)
+    {
+        SCL_L();
+        iic_delay_us(1);
+        if ((data<<i) & 0x80)
+        {
+            SDA_H();
+        }
+        else
+        {
+            SDA_L();
+        }
+        SDA_H();
+        iic_delay_us(1);
+    }
+
+    if (!iic_wait_ack())
+    {
+        iic_stop();
+    }
+}
+
+uint8_t iic_read_byte(uint8_t ack)
+{
+    uint8_t data = 0;
+    uint8_t i = 0;
+
+    SDA_H();
+
+    for (i=0; i<8; i++)
+    {
+        SCL_L();
+        iic_delay_us(1);
+        SCL_H();
+        data |= (IIC_SDA_IN()) ? (1<<i) : (0);
+    }
+
+    (!ack) ? (iic_ack()) : (iic_nack());
+    
+    return data;
+}

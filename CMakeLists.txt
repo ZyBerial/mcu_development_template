@@ -49,11 +49,21 @@ else ()
     add_compile_options(-Og -g)
 endif ()
 
-include_directories(Core/Inc Drivers/STM32F1xx_HAL_Driver/Inc Drivers/STM32F1xx_HAL_Driver/Inc/Legacy Drivers/CMSIS/Device/ST/STM32F1xx/Include Drivers/CMSIS/Include ModulesDriver/IIC_OLED ModulesDriver/LED)
+include_directories(Core/Inc
+        Drivers/STM32F1xx_HAL_Driver/Inc
+        Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
+        Drivers/CMSIS/Device/ST/STM32F1xx/Include
+        Drivers/CMSIS/Include ModulesDriver/IIC_OLED
+        ModulesDriver/LED
+        ModulesDriver/Timer)
 
 add_definitions(-DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB)
 
-file(GLOB_RECURSE SOURCES "Core/*.*" "Drivers/*.*" "ModulesDriver/LED/*.*" "ModulesDriver/IIC_OLED/*.*")
+file(GLOB_RECURSE SOURCES "Core/*.*"
+        "Drivers/*.*"
+        "ModulesDriver/LED/*.*"
+        "ModulesDriver/IIC_OLED/*.*"
+        "ModulesDriver/Timer/*.*")
 
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32F103C8TX_FLASH.ld)
 
