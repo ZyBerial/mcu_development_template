@@ -1,4 +1,5 @@
 #include "driver_iic.h"
+#include "hal_config.h"
 
 #define SDA_L()         HAL_GPIO_WritePin(SDA1_GPIO_Port, SDA1_Pin, GPIO_PIN_RESET)
 #define SDA_H()         HAL_GPIO_WritePin(SDA1_GPIO_Port, SDA1_Pin, GPIO_PIN_SET)

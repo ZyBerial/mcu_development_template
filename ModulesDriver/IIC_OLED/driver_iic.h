@@ -3,18 +3,7 @@
 
 #include "stm32f1xx_hal.h"
 
-#ifndef SCL1_Pin
-#define SCL1_Pin GPIO_PIN_6
-#define SCL1_GPIO_Port GPIOB
-#endif
-
-#ifndef SDA1_Pin
-#define SDA1_Pin GPIO_PIN_7
-#define SDA1_GPIO_Port GPIOB
-#endif
-
 extern void iic_gpio_reinit(void);
-
 extern void iic_start(void);
 extern void iic_stop(void);
 extern uint8_t iic_wait_ack(void);
