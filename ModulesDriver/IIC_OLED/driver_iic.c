@@ -18,6 +18,12 @@ static void iic_delay_us(uint32_t nus)
     while (Delay --);
 }
 
+static void I2C_Delay(uint32_t t)
+{
+    volatile uint32_t tmp = t;
+    while(tmp--);
+}
+
 void iic_gpio_reinit(void)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -40,9 +46,9 @@ void iic_start(void)
 {
     SDA_H();
     SCL_H();
-    iic_delay_us(1);
+    I2C_Delay(100);
     SDA_L();
-    iic_delay_us(1);
+    I2C_Delay(100);
     SCL_L();
 }
 
@@ -50,9 +56,9 @@ void iic_stop(void)
 {
     SDA_L();
     SCL_H();
-    iic_delay_us(1);
+    I2C_Delay(100);
     SDA_H();
-    iic_delay_us(1);
+    I2C_Delay(100);
 }
 
 uint8_t iic_wait_ack(void)
@@ -61,18 +67,17 @@ uint8_t iic_wait_ack(void)
 
     SCL_L();
     SDA_H();
-    iic_delay_us(1);
+    I2C_Delay(100);
 
     SCL_H();
-    iic_delay_us(1);
-
     while(IIC_SDA_IN())
     {
-        if (++ucErrTime >= 250)
+        if (++ucErrTime >= 100)
         {
             SCL_L();
             return 0;
         }
+        I2C_Delay(10);
     }
 
     SCL_L();
@@ -83,18 +88,18 @@ void iic_ack(void)
 {
     SCL_L();
     SDA_L();
-    iic_delay_us(1);
+    I2C_Delay(100);
     SCL_H();
-    iic_delay_us(1);
+    I2C_Delay(100);
 }
 
 void iic_nack(void)
 {
     SCL_L();
     SDA_H();
-    iic_delay_us(1);
+    I2C_Delay(100);
     SCL_H();
-    iic_delay_us(1);
+    I2C_Delay(100);
 }
 
 void iic_write_byte(uint8_t data)
@@ -104,7 +109,7 @@ void iic_write_byte(uint8_t data)
     for (i=0; i<8; i++)
     {
         SCL_L();
-        iic_delay_us(1);
+        I2C_Delay(100);
         if ((data<<i) & 0x80)
         {
             SDA_H();
@@ -114,7 +119,7 @@ void iic_write_byte(uint8_t data)
             SDA_L();
         }
         SDA_H();
-        iic_delay_us(1);
+        I2C_Delay(100);
     }
 
     if (!iic_wait_ack())
@@ -133,8 +138,9 @@ uint8_t iic_read_byte(uint8_t ack)
     for (i=0; i<8; i++)
     {
         SCL_L();
-        iic_delay_us(1);
+        I2C_Delay(100);
         SCL_H();
+        I2C_Delay(100);
         data |= (IIC_SDA_IN()) ? (1<<i) : (0);
     }
 
