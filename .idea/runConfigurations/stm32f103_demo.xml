@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="stm32f103-demo" type="com.jetbrains.cidr.embedded.openocd.conf.type" factoryName="com.jetbrains.cidr.embedded.openocd.conf.factory" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="learn_hal" TARGET_NAME="learn_hal.elf" CONFIG_NAME="Debug-MinGW-STM32" version="1" RUN_TARGET_PROJECT_NAME="learn_hal" RUN_TARGET_NAME="learn_hal.elf">
+  <configuration default="false" name="stm32f103-demo" type="com.jetbrains.cidr.embedded.openocd.conf.type" factoryName="com.jetbrains.cidr.embedded.openocd.conf.factory" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mcu_development_template" TARGET_NAME="mcu_development_template.elf" CONFIG_NAME="Debug-MinGW-STM32" version="1" RUN_TARGET_PROJECT_NAME="mcu_development_template" RUN_TARGET_NAME="mcu_development_template.elf">
     <openocd version="1" gdb-port="3333" telnet-port="4444" board-config="C:\Project\mcu\learn_hal\config\stlink.cfg" reset-type="INIT" download-type="UPDATED_ONLY">
       <debugger kind="GDB" isBundled="true" />
     </openocd>
